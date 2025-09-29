@@ -1,0 +1,8 @@
+﻿backend/target/
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+.DS_Store
+Thumbs.db
+dll-files/
+!dll-files/.gitkeep

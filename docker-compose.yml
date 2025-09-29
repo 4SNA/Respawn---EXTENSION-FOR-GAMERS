@@ -1,18 +1,33 @@
 version: '3.8'
 services:
-  mongo:
+  mongodb:
     image: mongo:latest
-    container_name: respawn-mongo
-    ports:
-      - "27017:27017"
+    container_name: respawn-mongodb
+    restart: always
+    ports: ["27017:27017"]
+    environment:
+      MONGO_INITDB_DATABASE: respawn_db
     volumes:
-      - mongo_data:/data/db
-
+      - mongodb_data:/data/db
+    networks: [respawn-network]
   redis:
     image: redis:latest
     container_name: respawn-redis
-    ports:
-      - "6379:6379"
-
-volumes:
-  mongo_data:
+    restart: always
+    ports: ["6379:6379"]
+    networks: [respawn-network]
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: respawn-backend
+    restart: always
+    ports: ["8080:8080"]
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on: [mongodb, redis]
+    volumes:
+      - ./dll-files:/app/dll-files
+    networks: [respawn-network]
+volumes: { mongodb_data: {} }
+networks: { respawn-network: { driver: bridge } }
